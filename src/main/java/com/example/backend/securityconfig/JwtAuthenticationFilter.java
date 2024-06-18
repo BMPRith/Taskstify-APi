@@ -1,7 +1,6 @@
 package com.example.backend.securityconfig;
 
-
-import com.example.backend.service.implement.UserServiceImp;
+import com.example.backend.service.implement.AuthImplement;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,8 +21,7 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private final UserServiceImp userServiceImp;
-
+    private final AuthImplement authImplement;
 
     @Override
     protected void doFilterInternal(@NotNull HttpServletRequest request,
@@ -32,19 +30,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
-        final  String userEmail;
-        if (authHeader == null || !authHeader.startsWith("Bearer ")){
+        final String userEmail;
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
         jwt = authHeader.substring(7);
         userEmail = jwtUtil.extractUsername(jwt);
-        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null){
-            UserDetails userDetails = userServiceImp.loadUserByUsername(userEmail);
-            if (jwtUtil.isTokenValid(jwt,userDetails)){
+        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = authImplement.loadUserByUsername(userEmail);
+            if (jwtUtil.isTokenValid(jwt, userDetails)) {
+                Integer userId = jwtUtil.extractUserId(jwt);
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
-                        null,
+                        userId,
                         userDetails.getAuthorities()
                 );
                 authToken.setDetails(
@@ -54,6 +53,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
         filterChain.doFilter(request, response);
-
     }
 }

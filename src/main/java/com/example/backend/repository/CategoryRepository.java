@@ -5,32 +5,35 @@ import com.example.backend.model.request.CategoryRequest;
 import org.apache.ibatis.annotations.*;
 
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 import java.util.List;
 
 @Mapper
 public interface CategoryRepository {
-    @Select("SELECT * FROM categories LIMIT ${size} OFFSET #{size} * (#{page} -1)")
-    List<Category> getAllCategories(Integer page, Integer size);
-    @Select("SELECT * FROM categories WHERE id = #{categoryId}")
-    Category getCategoryByID(Integer categoryId);
-    @Insert("INSERT INTO categories (name, date, user_id) VALUES (#{request.name}, #{date}, #{userId}) RETURNING id")
-    @Result(property = "userId", column = "user_id",
-            one = @One(select = "com.example.backend.repository.UserRepository.getByID")
-    )
-    Category insertCategory(@Param("request") CategoryRequest categoryRequest);
-    @Select("UPDATE categories SET name = #{request.name} WHERE id = {categoryId}")
-    Category updateCategory(@Param("request")CategoryRequest categoryRequest, Integer categoryId);
-    @Select("DELETE FROM categories WHERE id = #{categoryId}")
-    Category deleteCategory(Integer categoryId);
-    @Select("SELECT * FROM categories LIMIT ${size} OFFSET #{size} * (#{page} -1)")
-    List<Category> getAllCategoriesUser(Integer page, Integer size);
-    @Select("SELECT c.*, u.id AS userId FROM categories c INNER JOIN users u ON c.user_id = u.id WHERE c.id = #{categoryId}")
-    @Results({
+    @Results(id = "Mapper", value = {
             @Result(property = "id", column = "id"),
             @Result(property = "name", column = "name"),
             @Result(property = "date", column = "date"),
             @Result(property = "userId", column = "user_id")
     })
-    Category getCategoryByIDUser(@Param("categoryId") Integer categoryId);
+    @Select("SELECT * FROM categories LIMIT ${size} OFFSET #{size} * (#{page} -1)")
+    List<Category> getAllCategories(Integer page, Integer size);
+    @Select("SELECT * FROM categories WHERE id = #{categoryId}")
+    @ResultMap("Mapper")
+    Category getCategoryByID(Integer categoryId);
+    @Select("INSERT INTO categories (name, date, user_id) VALUES (#{request.name}, #{date}, #{userId}) RETURNING id, name, date, user_id")
+    @ResultMap("Mapper")
+    Category insertCategoryForCurrentUser(@Param("request") CategoryRequest name, @Param("date") Timestamp date, @Param("userId") Integer userId);
+    @Select("UPDATE categories SET name = #{request.name} WHERE id = #{categoryId} AND user_id = #{userId} RETURNING id, name, date, user_id")
+    @ResultMap("Mapper")
+    Category updateCategoryForCurrentUser(@Param("request")CategoryRequest categoryRequest, Integer categoryId, Integer userId);
+    @Select("DELETE FROM categories WHERE id = #{categoryId} AND user_id = #{userId} RETURNING id, name, date, user_id")
+    @ResultMap("Mapper")
+    Category deleteCategoryForCurrentUser(Integer categoryId, Integer userId);
+    @Select("SELECT * FROM categories WHERE user_id = #{userId} LIMIT #{size} OFFSET #{size} * (#{page} - 1)")
+    @ResultMap("Mapper")
+    List<Category> getAllCategoriesForCurrentUser(@Param("userId") Integer userId, @Param("page") Integer page, @Param("size") Integer size);
+    @Select("SELECT * FROM categories WHERE id = #{categoryId} AND user_id = #{userId}")
+    @ResultMap("Mapper")
+    Category getCategoryByIDForCurrentUser(Integer categoryId, @Param("userId") Integer userId);
 }

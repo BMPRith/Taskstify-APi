@@ -4,26 +4,41 @@ import com.example.backend.model.entity.Task;
 import com.example.backend.model.request.TaskRequest;
 import org.apache.ibatis.annotations.*;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @Mapper
 public interface TaskRepository {
+    @Results(id = "Mapper", value = {
+            @Result(property = "id", column = "id"),
+            @Result(property = "name", column = "name"),
+            @Result(property = "description", column = "description"),
+            @Result(property = "date", column = "date"),
+            @Result(property = "status", column = "status"),
+            @Result(property = "categoryId", column = "category_id"),
+            @Result(property = "userId", column = "user_id")
+    })
     @Select("SELECT * FROM tasks LIMIT ${size} OFFSET #{size} * (#{page} -1)")
     List<Task> getAllTasks(Integer page, Integer size);
     @Select("SELECT * FROM tasks WHERE id = #{taskId}")
-//    @Result(one = @One(select = "com.example.backend.repository.CategoryRepository.getCategoryByID"))
+    @ResultMap("Mapper")
     Task getTaskByID(Integer taskId);
-    @Select("INSERT INTO tasks (name, description, date, status, category_id) VALUES (#{request.name}, #{request.description}, #{request.date}, #{request.status}, #{request.categoryId})")
-    Task insertTask(@Param("request")TaskRequest taskRequest);
-    @Select("UPDATE tasks SET name = #{request.name} WHERE id = {taskId}")
-    Task updateTask(@Param("request")TaskRequest taskRequest, Integer taskId);
-    @Select("DELETE FROM tasks WHERE id = #{taskId}")
-    Task deleteTask(Integer taskId);
-    @Select("SELECT * FROM tasks LIMIT ${size} OFFSET #{size} * (#{page} -1)")
-    List<Task> getAllTasksUser(Integer page, Integer size);
-    @Select("SELECT * FROM tasks WHERE id = #{taskId}")
-    Task getTaskByIDUser(Integer taskId);
-    @Select("SELECT * FROM task_tb WHERE status = #{request}")
-    List<Task> filterTaskByStatus(@Param("request") String taskStatus);
+    @Select("SELECT COUNT(*) FROM categories WHERE id = #{categoryId} AND user_id = #{userId}")
+    int checkExistedCategoryForCurrentUser(@Param("categoryId") Integer categoryId, @Param("userId") Integer userId);
 
+    @Select("INSERT INTO tasks (name, description, date, status, category_id, user_id) VALUES (#{request.name}, #{request.description}, #{date}, #{request.status}, #{request.categoryId}, #{userId}) RETURNING id, name, description, date, status, user_id, category_id")
+    @ResultMap("Mapper")
+    Task insertTaskForCurrentUser(@Param("request")TaskRequest taskRequest, Timestamp date, Integer userId);
+    @Select("UPDATE tasks SET name = #{request.name}, description = #{request.description}, date = #{date}, status = #{request.status}, category_id = #{request.categoryId} WHERE id = #{taskId} AND user_id = #{userId} RETURNING id, name, description, date, status, user_id, category_id")
+    @ResultMap("Mapper")
+    Task updateTaskForCurrentUser(@Param("request")TaskRequest taskRequest, Timestamp date, Integer taskId, Integer userId);
+    @Select("DELETE FROM tasks WHERE id = #{taskId} AND user_id = #{userId} RETURNING id, name, description, date, status, user_id, category_id")
+    @ResultMap("Mapper")
+    Task deleteTaskForCurrentUser(Integer taskId, Integer userId);
+    @Select("SELECT * FROM tasks LIMIT ${size} OFFSET #{size} * (#{page} -1)")
+    @ResultMap("Mapper")
+    List<Task> getAllTasksForCurrentUser(Integer page, Integer size, Integer userId);
+    @Select("SELECT * FROM tasks WHERE id = #{taskId}")
+    @ResultMap("Mapper")
+    Task getTaskByIDForCurrentUser(Integer taskId, Integer userId);
 }

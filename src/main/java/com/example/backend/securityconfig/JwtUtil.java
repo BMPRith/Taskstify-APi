@@ -1,5 +1,6 @@
 package com.example.backend.securityconfig;
 
+import com.example.backend.model.entity.UserInfo;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -24,9 +25,11 @@ public class JwtUtil {
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
+
     public Integer extractUserId(String token) {
-        return (Integer) extractAllClaims(token).get("userId");
+        return extractClaim(token, claims -> claims.get("userId", Integer.class));
     }
+
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
@@ -40,6 +43,7 @@ public class JwtUtil {
         extraClaims.put("role", userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList()));
+        extraClaims.put("userId", ((UserInfo) userDetails).getId());
 
         return Jwts.builder()
                 .setClaims(extraClaims)
@@ -76,9 +80,8 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody();
     }
-
-    public List<String> extractRoles(String token) {
-        Claims claims = extractAllClaims(token);
-        return claims.get("role", List.class);
-    }
+//    public List<String> extractRoles(String token) {
+//        Claims claims = extractAllClaims(token);
+//        return claims.get("role", List.class);
+//    }
 }

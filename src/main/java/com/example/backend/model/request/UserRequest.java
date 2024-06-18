@@ -14,5 +14,5 @@ import java.util.List;
 public class UserRequest {
     private String email;
     private String password;
-    private List<String> role;
+    private String role;
 }

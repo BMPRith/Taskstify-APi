@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.*;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Mapper
-public interface UserRepository {
+public interface AuthRepository {
 
     @Select("SELECT * FROM users WHERE email = #{email}")
     @Results(id = "UserMapper", value = {
@@ -15,15 +15,9 @@ public interface UserRepository {
             @Result(property = "role",column = "role")
     })
     UserInfo findByEmail(@Param("email") String email);
-    @Select("SELECT * FROM users WHERE id = #{userId}")
-    @RequestMapping("UserMapper")
-    UserInfo getByID(Integer userId);
 
     @Select("INSERT INTO users(email, password, role) " +
             "VALUES (#{request.email}, #{request.password}, 'USER') RETURNING id")
     @RequestMapping("UserMapper")
     Integer saveUser(@Param("request") AuthRequest authRequest);
-
-
-
 }

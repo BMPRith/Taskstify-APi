@@ -7,13 +7,15 @@ import com.example.backend.model.response.TaskResponse;
 import com.example.backend.service.implement.TaskImplement;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/tasks")
+@RequestMapping("/api/taskstify/user")
 @SecurityRequirement(name = "bearerAuth")
 public class TaskController {
     private final TaskImplement taskImplement;
@@ -21,73 +23,66 @@ public class TaskController {
     public TaskController(TaskImplement taskImplement) {
         this.taskImplement = taskImplement;
     }
-    @GetMapping("/all")
-    public ResponseEntity<TaskResponse<List<Task>>> getAllTasks(@RequestParam Integer page, Integer size){
+
+    @GetMapping("/tasks/all")
+    public ResponseEntity<TaskResponse<List<Task>>> getAllTasksForCurrentUser(@RequestParam Integer page, Integer size){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Integer userId = (Integer) authentication.getCredentials();
         TaskResponse<List<Task>> response = TaskResponse.<List<Task>>builder()
-                .payload(taskImplement.getAllTasks(page,size))
+                .payload(taskImplement.getAllTasksForCurrentUser(page,size,userId))
                 .date(new Timestamp(System.currentTimeMillis()))
                 .success("true")
                 .build();
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<TaskResponse<Task>> getTaskByID(@PathVariable("id") Integer taskId){
+    @GetMapping("/tasks/{id}")
+    public ResponseEntity<TaskResponse<Task>> getTaskByIDForCurrentUser(@PathVariable("id") Integer taskId){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Integer userId = (Integer) authentication.getCredentials();
+            TaskResponse<Task> response = TaskResponse.<Task>builder()
+                    .payload(taskImplement.getTaskByIDForCurrentUser(taskId, userId))
+                    .date(new Timestamp(System.currentTimeMillis()))
+                    .success("true")
+                    .build();
+            return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/tasks")
+    public ResponseEntity<TaskResponse<Task>> insertTaskForCurrentUser(@RequestBody TaskRequest taskRequest){
+        Timestamp currentDate = new Timestamp(System.currentTimeMillis());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Integer userId = (Integer) authentication.getCredentials();
         TaskResponse<Task> response = TaskResponse.<Task>builder()
-                .payload(taskImplement.getTaskByID(taskId))
+                .payload(taskImplement.insertTaskForCurrentUser(taskRequest, currentDate, userId))
                 .date(new Timestamp(System.currentTimeMillis()))
                 .success("true")
                 .build();
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/all/users")
-    public ResponseEntity<TaskResponse<List<Task>>> getAllTasksUser(@RequestParam Integer page, Integer size){
-        TaskResponse<List<Task>> response = TaskResponse.<List<Task>>builder()
-                .payload(taskImplement.getAllTasksUser(page,size))
-                .date(new Timestamp(System.currentTimeMillis()))
-                .success("true")
-                .build();
-        return ResponseEntity.ok(response);
+    @PutMapping("/tasks/{id}")
+    public ResponseEntity<TaskResponse<Task>> updateTaskForCurrentUser(@RequestBody TaskRequest taskRequest,@PathVariable("id") Integer taskId){
+        Timestamp currentDate = new Timestamp(System.currentTimeMillis());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Integer userId = (Integer) authentication.getCredentials();
+            TaskResponse<Task> response = TaskResponse.<Task>builder()
+                    .payload(taskImplement.updateTaskForCurrentUser(taskRequest, currentDate, taskId, userId))
+                    .date(new Timestamp(System.currentTimeMillis()))
+                    .success("true")
+                    .build();
+            return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{id}/users")
-    public ResponseEntity<TaskResponse<Task>> getTaskByIDUser(@PathVariable("id") Integer taskId){
-        TaskResponse<Task> response = TaskResponse.<Task>builder()
-                .payload(taskImplement.getTaskByIDUser(taskId))
-                .date(new Timestamp(System.currentTimeMillis()))
-                .success("true")
-                .build();
-        return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("/users")
-    public ResponseEntity<TaskResponse<Task>> insertTask(@RequestBody TaskRequest taskRequest){
-        TaskResponse<Task> response = TaskResponse.<Task>builder()
-                .payload(taskImplement.insertTask(taskRequest))
-                .date(new Timestamp(System.currentTimeMillis()))
-                .success("true")
-                .build();
-        return ResponseEntity.ok(response);
-    }
-
-    @PutMapping("/{id}/users")
-    public ResponseEntity<TaskResponse<Task>> updateTask(@RequestBody TaskRequest taskRequest,@PathVariable("id") Integer taskId){
-        TaskResponse<Task> response = TaskResponse.<Task>builder()
-                .payload(taskImplement.updateTask(taskRequest, taskId))
-                .date(new Timestamp(System.currentTimeMillis()))
-                .success("true")
-                .build();
-        return ResponseEntity.ok(response);
-    }
-
-    @DeleteMapping("/{id}/users")
-    public ResponseEntity<TaskResponse<Task>> deleteTask(@PathVariable("id") Integer taskId){
-        TaskResponse<Task> response = TaskResponse.<Task>builder()
-                .payload(taskImplement.deleteTask(taskId))
-                .date(new Timestamp(System.currentTimeMillis()))
-                .success("true")
-                .build();
-        return ResponseEntity.ok(response);
+    @DeleteMapping("/tasks/{id}")
+    public ResponseEntity<TaskResponse<Task>> deleteTaskForCurrentUser(@PathVariable("id") Integer taskId){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Integer userId = (Integer) authentication.getCredentials();
+            TaskResponse<Task> response = TaskResponse.<Task>builder()
+                    .payload(taskImplement.deleteTaskForCurrentUser(taskId, userId))
+                    .date(new Timestamp(System.currentTimeMillis()))
+                    .success("true")
+                    .build();
+            return ResponseEntity.ok(response);
     }
 }

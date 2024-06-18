@@ -5,18 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Task {
+public class User {
     private Integer id;
-    private String name;
-    private String description;
-    private Timestamp date;
-    private String status;
-    private Integer userId;
-    private Integer categoryId;
+    private String email;
+    private String role;
 }

@@ -1,6 +1,6 @@
 package com.example.backend.securityconfig;
 
-import com.example.backend.service.implement.UserServiceImp;
+import com.example.backend.service.implement.AuthImplement;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
@@ -21,14 +21,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final BCryptPasswordEncoder passwordEncoder;
-    private final UserServiceImp userServiceImp;
+    private final AuthImplement authImplement;
     private final JwtAuthEntryPoint jwtAuthEntryPoint;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userServiceImp);
+        authProvider.setUserDetailsService(authImplement);
         authProvider.setPasswordEncoder(passwordEncoder);
         return authProvider;
     }
@@ -43,11 +43,11 @@ public class SecurityConfig {
         httpSecurity
                 .csrf().disable()
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/api/v1/users/admin").hasRole("ADMIN")
-                        .requestMatchers("/api/v1/categories/**", "/api/v1/tasks/**").hasRole("USER")
+                        .requestMatchers("/api/taskstify/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/taskstify/user/categories/**", "/api/taskstify/user/tasks/**").hasRole("USER")
                         .requestMatchers(
                                 "/", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui-html",
-                                "/api/v1/**", "/api/v1/register", "/api/v1/home/**").permitAll()
+                                "/api/taskstify/**", "/api/taskstify/register", "/api/taskstify/home/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
