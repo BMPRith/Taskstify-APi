@@ -5,6 +5,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+
 
 @Data
 @AllArgsConstructor
@@ -13,6 +16,7 @@ import lombok.NoArgsConstructor;
 public class TaskRequest {
     private String name;
     private String description;
+    private Timestamp date;
     private String status;
     private Integer categoryId;
 }

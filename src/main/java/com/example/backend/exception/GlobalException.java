@@ -2,6 +2,7 @@ package com.example.backend.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -60,6 +61,19 @@ public class GlobalException extends ResponseEntityExceptionHandler {
         problemDetail.setTitle("Category Doesn't Existed");
         problemDetail.setProperty("time", LocalDateTime.now());
         return problemDetail;
+    }
+    @ExceptionHandler(InvalidCredential.class)
+    public ResponseEntity<String> handleInvalidCredentialsException(InvalidCredential e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+    }
+
+    @ExceptionHandler(EmailNotFound.class)
+    public ResponseEntity<String> handleEmailNotFoundException(EmailNotFound e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+    @ExceptionHandler(EmailTaken.class)
+    public ResponseEntity<String> handleEmailTakenException(EmailTaken e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 
 }

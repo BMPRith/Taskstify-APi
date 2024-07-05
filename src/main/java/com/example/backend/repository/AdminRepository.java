@@ -10,6 +10,6 @@ import java.util.List;
 public interface AdminRepository {
     @Select("SELECT * FROM users")
     List<User> getAllUsers();
-    @Select("DELETE FROM users WHERE id = #{userId} AND role = 'USER' RETURNING id, email, role")
+    @Select("DELETE FROM users WHERE id = #{userId} AND role = 'USER' RETURNING id, name, email, role")
     User deleteUserByID(Integer userId);
 }

@@ -17,6 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/taskstify/user")
 @SecurityRequirement(name = "bearerAuth")
+@CrossOrigin(origins = "http://localhost:3000")
 public class TaskController {
     private final TaskImplement taskImplement;
 
@@ -25,11 +26,11 @@ public class TaskController {
     }
 
     @GetMapping("/tasks/all")
-    public ResponseEntity<TaskResponse<List<Task>>> getAllTasksForCurrentUser(@RequestParam Integer page, Integer size){
+    public ResponseEntity<TaskResponse<List<Task>>> getAllTasksForCurrentUser(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Integer userId = (Integer) authentication.getCredentials();
         TaskResponse<List<Task>> response = TaskResponse.<List<Task>>builder()
-                .payload(taskImplement.getAllTasksForCurrentUser(page,size,userId))
+                .payload(taskImplement.getAllTasksForCurrentUser(userId))
                 .date(new Timestamp(System.currentTimeMillis()))
                 .success("true")
                 .build();
@@ -50,11 +51,10 @@ public class TaskController {
 
     @PostMapping("/tasks")
     public ResponseEntity<TaskResponse<Task>> insertTaskForCurrentUser(@RequestBody TaskRequest taskRequest){
-        Timestamp currentDate = new Timestamp(System.currentTimeMillis());
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Integer userId = (Integer) authentication.getCredentials();
         TaskResponse<Task> response = TaskResponse.<Task>builder()
-                .payload(taskImplement.insertTaskForCurrentUser(taskRequest, currentDate, userId))
+                .payload(taskImplement.insertTaskForCurrentUser(taskRequest, userId))
                 .date(new Timestamp(System.currentTimeMillis()))
                 .success("true")
                 .build();
@@ -85,4 +85,17 @@ public class TaskController {
                     .build();
             return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/tasks/category/{categoryId}")
+    public ResponseEntity<TaskResponse<List<Task>>> getTasksByCategoryForCurrentUser(@PathVariable("categoryId") Integer categoryId){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Integer userId = (Integer) authentication.getCredentials();
+        TaskResponse<List<Task>> response = TaskResponse.<List<Task>>builder()
+                .payload(taskImplement.getTasksByCategory(categoryId, userId))
+                .date(new Timestamp(System.currentTimeMillis()))
+                .success("true")
+                .build();
+        return ResponseEntity.ok(response);
+    }
+
 }

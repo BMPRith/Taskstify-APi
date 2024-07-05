@@ -16,6 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/taskstify/user")
 @SecurityRequirement(name = "bearerAuth")
+@CrossOrigin(origins = "http://localhost:3000")
 public class CategoryController {
     private final CategoryImplement categoryImplement;
 
@@ -24,11 +25,11 @@ public class CategoryController {
     }
 
     @GetMapping("/categories/all")
-    public ResponseEntity<CategoryResponse<List<Category>>> getAllCategoriesForCurrentUser(@RequestParam Integer page, Integer size) {
+    public ResponseEntity<CategoryResponse<List<Category>>> getAllCategoriesForCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Integer userId = (Integer) authentication.getCredentials();
         CategoryResponse<List<Category>> response = CategoryResponse.<List<Category>>builder()
-                .payload(categoryImplement.getAllCategoriesForCurrentUser(userId, page, size))
+                .payload(categoryImplement.getAllCategoriesForCurrentUser(userId))
                 .date(new Timestamp(System.currentTimeMillis()))
                 .success("true")
                 .build();

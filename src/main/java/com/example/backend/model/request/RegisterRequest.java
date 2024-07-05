@@ -1,4 +1,4 @@
-package com.example.backend.model.entity;
+package com.example.backend.model.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,9 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class User {
-    private Integer id;
+public class RegisterRequest {
     private String name;
     private String email;
-    private String role;
+    private String password;
 }

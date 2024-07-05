@@ -1,9 +1,9 @@
 package com.example.backend.model.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.Builder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,7 +17,7 @@ import java.util.Collections;
 @Builder
 public class UserInfo implements UserDetails {
     private Integer id;
-    private String userName;
+    private String name;
     private String email;
     private String password;
     private String role;
@@ -35,7 +35,7 @@ public class UserInfo implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email; // Assuming email is used as username
+        return email;
     }
 
     @Override
@@ -58,3 +58,4 @@ public class UserInfo implements UserDetails {
         return true;
     }
 }
+

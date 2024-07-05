@@ -5,7 +5,6 @@ import com.example.backend.exception.CategoryNotFound;
 import com.example.backend.model.entity.Category;
 import com.example.backend.model.request.CategoryRequest;
 import com.example.backend.repository.CategoryRepository;
-import com.example.backend.service.AuthService;
 import com.example.backend.service.CategoryService;
 import org.springframework.stereotype.Service;
 
@@ -15,13 +14,13 @@ import java.util.List;
 public class CategoryImplement implements CategoryService {
     private final CategoryRepository categoryRepository;
 
-    public CategoryImplement(CategoryRepository categoryRepository, AuthService authService) {
+    public CategoryImplement(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
     }
 
     @Override
-    public List<Category> getAllCategories(Integer page, Integer size) {
-        return categoryRepository.getAllCategories(page, size);
+    public List<Category> getAllCategories() {
+        return categoryRepository.getAllCategories();
     }
 
     @Override
@@ -62,8 +61,8 @@ public class CategoryImplement implements CategoryService {
     }
 
     @Override
-    public List<Category> getAllCategoriesForCurrentUser(Integer userId, Integer page, Integer size) {
-        return categoryRepository.getAllCategoriesForCurrentUser(userId, page, size);
+    public List<Category> getAllCategoriesForCurrentUser(Integer userId) {
+        return categoryRepository.getAllCategoriesForCurrentUser(userId);
     }
 
     @Override

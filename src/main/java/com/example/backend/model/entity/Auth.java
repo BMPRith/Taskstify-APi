@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Auth {
     private Integer id;
+    private String name;
     private String email;
     private String password;
     private String role;

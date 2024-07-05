@@ -22,8 +22,12 @@ public class JwtUtil {
 
     private final String SECRET_KEY = "6251655468576D597133743677397A24432646294A404E635266556A586E3272";
 
-    public String extractUsername(String token) {
+    public String extractEmail(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+
+    public String extractName(String token) {
+        return extractClaim(token, claims -> claims.get("name", String.class));
     }
 
     public Integer extractUserId(String token) {
@@ -35,21 +39,24 @@ public class JwtUtil {
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+    public String generateToken(UserDetails userDetails, boolean rememberMe) {
+        return generateToken(new HashMap<>(), userDetails, rememberMe);
     }
 
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails, boolean rememberMe) {
         extraClaims.put("role", userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList()));
         extraClaims.put("userId", ((UserInfo) userDetails).getId());
+        extraClaims.put("name", ((UserInfo) userDetails).getName());
+
+        long expirationTime = rememberMe ? 1000 * 60 * 60 * 24 * 15 : 1000 * 60 * 60 * 3;
 
         return Jwts.builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 600 * 24))
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -64,8 +71,8 @@ public class JwtUtil {
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        final String email = extractEmail(token);
+        return (email.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
     private boolean isTokenExpired(String token) {
@@ -80,8 +87,4 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody();
     }
-//    public List<String> extractRoles(String token) {
-//        Claims claims = extractAllClaims(token);
-//        return claims.get("role", List.class);
-//    }
 }

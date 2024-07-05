@@ -16,8 +16,8 @@ public interface CategoryRepository {
             @Result(property = "date", column = "date"),
             @Result(property = "userId", column = "user_id")
     })
-    @Select("SELECT * FROM categories LIMIT ${size} OFFSET #{size} * (#{page} -1)")
-    List<Category> getAllCategories(Integer page, Integer size);
+    @Select("SELECT * FROM categories")
+    List<Category> getAllCategories();
     @Select("SELECT * FROM categories WHERE id = #{categoryId}")
     @ResultMap("Mapper")
     Category getCategoryByID(Integer categoryId);
@@ -30,9 +30,9 @@ public interface CategoryRepository {
     @Select("DELETE FROM categories WHERE id = #{categoryId} AND user_id = #{userId} RETURNING id, name, date, user_id")
     @ResultMap("Mapper")
     Category deleteCategoryForCurrentUser(Integer categoryId, Integer userId);
-    @Select("SELECT * FROM categories WHERE user_id = #{userId} LIMIT #{size} OFFSET #{size} * (#{page} - 1)")
+    @Select("SELECT * FROM categories WHERE user_id = #{userId}")
     @ResultMap("Mapper")
-    List<Category> getAllCategoriesForCurrentUser(@Param("userId") Integer userId, @Param("page") Integer page, @Param("size") Integer size);
+    List<Category> getAllCategoriesForCurrentUser(@Param("userId") Integer userId);
     @Select("SELECT * FROM categories WHERE id = #{categoryId} AND user_id = #{userId}")
     @ResultMap("Mapper")
     Category getCategoryByIDForCurrentUser(Integer categoryId, @Param("userId") Integer userId);

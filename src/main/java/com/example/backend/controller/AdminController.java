@@ -19,6 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/taskstify/admin")
 @SecurityRequirement(name = "bearerAuth")
+@CrossOrigin(origins = "http://localhost:3000")
 public class AdminController {
     private final CategoryImplement categoryImplement;
     private final AdminImplement adminImplement;
@@ -31,9 +32,9 @@ public class AdminController {
     }
 
     @GetMapping("/categories/all")
-    public ResponseEntity<CategoryResponse<List<Category>>> getAllCategories(@RequestParam Integer page, Integer size){
+    public ResponseEntity<CategoryResponse<List<Category>>> getAllCategories(){
         CategoryResponse<List<Category>> response = CategoryResponse.<List<Category>>builder()
-                .payload(categoryImplement.getAllCategories(page,size))
+                .payload(categoryImplement.getAllCategories())
                 .date(new Timestamp(System.currentTimeMillis()))
                 .success("true")
                 .build();
@@ -51,9 +52,9 @@ public class AdminController {
     }
 
     @GetMapping("/tasks/all")
-    public ResponseEntity<TaskResponse<List<Task>>> getAllTasks(@RequestParam Integer page, Integer size){
+    public ResponseEntity<TaskResponse<List<Task>>> getAllTasks(){
         TaskResponse<List<Task>> response = TaskResponse.<List<Task>>builder()
-                .payload(taskImplement.getAllTasks(page,size))
+                .payload(taskImplement.getAllTasks())
                 .date(new Timestamp(System.currentTimeMillis()))
                 .success("true")
                 .build();

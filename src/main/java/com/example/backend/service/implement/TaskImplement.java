@@ -17,14 +17,13 @@ import java.util.List;
 @Service
 public class TaskImplement implements TaskService {
     private final TaskRepository taskRepository;
-
     public TaskImplement(TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
     }
 
     @Override
-    public List<Task> getAllTasks(Integer page, Integer size) {
-        return taskRepository.getAllTasks(page, size);
+    public List<Task> getAllTasks() {
+        return taskRepository.getAllTasks();
     }
 
     @Override
@@ -36,7 +35,7 @@ public class TaskImplement implements TaskService {
     }
 
     @Override
-    public Task insertTaskForCurrentUser(TaskRequest taskRequest, Timestamp date, Integer userId) {
+    public Task insertTaskForCurrentUser(TaskRequest taskRequest, Integer userId) {
         int categoryCount = taskRepository.checkExistedCategoryForCurrentUser(taskRequest.getCategoryId(), userId);
         if (categoryCount <= 0) {
             throw new CategoryNotExisted(categoryCount);
@@ -47,7 +46,7 @@ public class TaskImplement implements TaskService {
                 !"in_progress".equals(taskRequest.getStatus())) {
             throw new StatusHandler("Status Field Accepts Only: (not_yet, is_completed, in_progress)");
         } else {
-            return taskRepository.insertTaskForCurrentUser(taskRequest, date, userId);
+            return taskRepository.insertTaskForCurrentUser(taskRequest, userId);
         }
     }
 
@@ -79,8 +78,8 @@ public class TaskImplement implements TaskService {
     }
 
     @Override
-    public List<Task> getAllTasksForCurrentUser(Integer page, Integer size, Integer userId) {
-        return taskRepository.getAllTasksForCurrentUser(page, size, userId);
+    public List<Task> getAllTasksForCurrentUser(Integer userId) {
+        return taskRepository.getAllTasksForCurrentUser(userId);
     }
 
     @Override
@@ -89,5 +88,10 @@ public class TaskImplement implements TaskService {
         if (search!=null) {
             return search;
         } else throw new TaskNotFound(taskId);
+    }
+
+    @Override
+    public List<Task> getTasksByCategory(Integer categoryId, Integer userId) {
+        return taskRepository.getTasksByCategory(categoryId, userId);
     }
 }

@@ -7,11 +7,12 @@ import java.sql.Timestamp;
 import java.util.List;
 
 public interface TaskService {
-    List<Task> getAllTasks(Integer page, Integer size);
+    List<Task> getAllTasks();
     Task getTaskByID(Integer taskId);
-    Task insertTaskForCurrentUser(TaskRequest taskRequest, Timestamp date, Integer userId);
+    Task insertTaskForCurrentUser(TaskRequest taskRequest, Integer userId);
     Task deleteTaskForCurrentUser(Integer taskId, Integer userId);
     Task updateTaskForCurrentUser(TaskRequest taskRequest, Timestamp date, Integer taskId, Integer userId);
-    List<Task> getAllTasksForCurrentUser(Integer page, Integer size, Integer userId);
+    List<Task> getAllTasksForCurrentUser(Integer userId);
     Task getTaskByIDForCurrentUser(Integer taskId, Integer userId);
+    List<Task> getTasksByCategory(Integer categoryId, Integer userId);
 }

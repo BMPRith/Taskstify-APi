@@ -1,9 +1,9 @@
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
+    name VARCHAR(99),
     email VARCHAR(300),
     password VARCHAR(300),
     role VARCHAR(300)
-
 );
 
 CREATE TABLE categories(
