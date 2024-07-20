@@ -117,5 +117,16 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid or expired password reset token.");
         }
     }
+
+    @PostMapping("/resend-verification-code")
+    public ResponseEntity<?> resend(@RequestBody RegisterRequest registerRequest) {
+        try {
+            authService.sendVerificationEmail(registerRequest.getEmail());
+            pendingRegistrations.put(registerRequest.getEmail(), registerRequest);
+            return ResponseEntity.ok("Verification code resent to your email. Please check and verify.");
+        } catch (EmailTaken e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        }
+    }
 }
 

@@ -23,3 +23,9 @@ CREATE TABLE tasks (
     category_id INTEGER REFERENCES categories(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+CREATE TABLE messages (
+    id SERIAL PRIMARY KEY,
+    messages VARCHAR(999),
+    email VARCHAR(300)
+);
+

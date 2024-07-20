@@ -2,7 +2,6 @@ package com.example.backend.service.implement;
 
 import com.example.backend.exception.UserNotFound;
 import com.example.backend.model.entity.User;
-
 import com.example.backend.repository.AdminRepository;
 import com.example.backend.service.AdminService;
 import org.springframework.stereotype.Service;

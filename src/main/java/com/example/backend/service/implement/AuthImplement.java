@@ -11,7 +11,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,7 +41,7 @@ public class AuthImplement implements UserDetailsService {
 
     public void saveVerificationCode(String email, String code) {
         verificationCodes.put(email, code);
-        verificationCodeExpirations.put(email, LocalDateTime.now().plusMinutes(1));
+        verificationCodeExpirations.put(email, LocalDateTime.now().plusMinutes(10));
     }
 
     public String getVerificationCode(String email) {
@@ -55,7 +54,7 @@ public class AuthImplement implements UserDetailsService {
 
     public void savePasswordResetToken(String email, String token) {
         passwordResetTokens.put(email, token);
-        passwordResetTokenExpirations.put(email, LocalDateTime.now().plusMinutes(1));
+        passwordResetTokenExpirations.put(email, LocalDateTime.now().plusMinutes(30));
     }
 
     public String getPasswordResetToken(String email) {
