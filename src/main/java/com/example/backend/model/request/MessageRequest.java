@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class MessageRequest {
-    private String email;
+    private Integer rating;
     private String message;
 }

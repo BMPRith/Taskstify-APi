@@ -12,7 +12,7 @@
 	<artifactId>backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>backend</name>
-	<description>Taskzone API</description>
+	<description>Taskstify API</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
@@ -112,10 +112,17 @@
 			<artifactId>jjwt-impl</artifactId>
 			<version>0.11.5</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
+
+<!--		<dependency>-->
+<!--			<groupId>com.onesignal</groupId>-->
+<!--			<artifactId>onesignal-java</artifactId>-->
+<!--			<version>1.0.1</version>-->
+<!--		</dependency>-->
 
 	</dependencies>
 

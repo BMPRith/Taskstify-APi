@@ -10,15 +10,16 @@ import java.util.List;
 public interface MessageRepository {
     @Results(id = "Mapper", value = {
             @Result(property = "id", column = "id"),
-            @Result(property = "email", column = "email"),
-            @Result(property = "message", column = "messages")
+            @Result(property = "message", column = "messages"),
+            @Result(property = "rating", column = "rating"),
+            @Result(property = "name", column = "name"),
     })
-    @Select("SELECT * FROM messages")
+    @Select("SELECT * FROM messages WHERE rating >= 4")
     List<Message> getAllMessages();
     @Select("SELECT * FROM messages WHERE id = #{id}")
     @ResultMap("Mapper")
     Message getMessageById(Integer id);
-    @Select("INSERT INTO messages (email, messages) VALUES (#{request.email}, #{request.message}) RETURNING id, email, messages")
+    @Select("INSERT INTO messages (messages, rating, user_id, name) VALUES (#{request.message}, #{request.rating}, #{userId}, #{name})")
     @ResultMap("Mapper")
-    Message insertMessageByUser(@Param("request") MessageRequest messageRequest);
+    Message insertMessageByUser(@Param("request") MessageRequest messageRequest, Integer userId, String name);
 }

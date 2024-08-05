@@ -21,6 +21,7 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 @RequestMapping("/api/taskstify/home")
@@ -32,7 +33,7 @@ public class AuthController {
     private final ModelMapper modelMapper;
     private final PasswordConfig passwordConfig;
 
-    private Map<String, RegisterRequest> pendingRegistrations = new HashMap<>();
+    private final Map<String, RegisterRequest> pendingRegistrations = new ConcurrentHashMap<>();
 
     public AuthController(AuthService authService, AuthImplement authImplement, ModelMapper modelMapper, PasswordConfig passwordConfig) {
         this.authService = authService;
@@ -88,9 +89,14 @@ public class AuthController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid verification code.");
             }
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.GONE).body("Verification code expired");
+            if ("Verification code expired".equals(e.getMessage())) {
+                return ResponseEntity.status(HttpStatus.GONE).body("Verification code expired");
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid verification code.");
+            }
         }
     }
+
 
     @PostMapping("/forgot-password")
     public ResponseEntity<?> sendPasswordReset(@RequestBody Map<String, String> request) {
@@ -122,7 +128,7 @@ public class AuthController {
     public ResponseEntity<?> resend(@RequestBody RegisterRequest registerRequest) {
         try {
             authService.sendVerificationEmail(registerRequest.getEmail());
-            pendingRegistrations.put(registerRequest.getEmail(), registerRequest);
+//            pendingRegistrations.put(registerRequest.getEmail(), registerRequest);
             return ResponseEntity.ok("Verification code resent to your email. Please check and verify.");
         } catch (EmailTaken e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());

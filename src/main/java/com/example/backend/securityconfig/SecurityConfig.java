@@ -50,7 +50,7 @@ public class SecurityConfig {
                 .cors().and() // Enable CORS
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/api/taskstify/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/taskstify/user/categories/**", "/api/taskstify/user/tasks/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/taskstify/user/categories/**", "/api/taskstify/user/tasks/**", "/api/taskstify/messages/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(
                                 "/", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui-html",
                                 "/api/taskstify/**", "/api/taskstify/register", "/api/taskstify/home/**").permitAll()

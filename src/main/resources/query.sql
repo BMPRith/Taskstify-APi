@@ -25,7 +25,9 @@ CREATE TABLE tasks (
 
 CREATE TABLE messages (
     id SERIAL PRIMARY KEY,
+    name VARCHAR(300),
     messages VARCHAR(999),
-    email VARCHAR(300)
+    rating INTEGER,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 

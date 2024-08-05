@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Message {
     private Integer id;
-    private String email;
+    private Integer rating;
     private String message;
+    private String name;
 }

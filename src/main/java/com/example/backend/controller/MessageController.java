@@ -40,8 +40,6 @@ public class MessageController {
 
     @GetMapping("/messages/{id}")
     public ResponseEntity<MessageResponse<Message>> getMessageByID(@PathVariable("id") Integer messageId){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Integer userId = (Integer) authentication.getCredentials();
         MessageResponse<Message> response = MessageResponse.<Message>builder()
                 .payload(messageImplement.getMessageById(messageId))
                 .date(new Timestamp(System.currentTimeMillis()))
@@ -54,8 +52,9 @@ public class MessageController {
     public ResponseEntity<MessageResponse<Message>> insertMessage(@RequestBody MessageRequest messageRequest){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Integer userId = (Integer) authentication.getCredentials();
+        String name = authentication.getName();
         MessageResponse<Message> response = MessageResponse.<Message>builder()
-                .payload(messageImplement.insertMessages(messageRequest))
+                .payload(messageImplement.insertMessages(messageRequest, userId, name))
                 .date(new Timestamp(System.currentTimeMillis()))
                 .success("true")
                 .build();

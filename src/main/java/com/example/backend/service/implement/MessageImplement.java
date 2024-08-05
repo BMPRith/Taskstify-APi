@@ -22,8 +22,8 @@ public class MessageImplement implements MessageService {
     }
 
     @Override
-    public Message insertMessages(MessageRequest messageRequest) {
-        return messageRepository.insertMessageByUser(messageRequest);
+    public Message insertMessages(MessageRequest messageRequest, Integer userId, String name) {
+        return messageRepository.insertMessageByUser(messageRequest, userId, name);
     }
 
     @Override

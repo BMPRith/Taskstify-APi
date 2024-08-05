@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
@@ -19,10 +20,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class AuthImplement implements UserDetailsService {
     private final AuthRepository authRepository;
     private final PasswordEncoder passwordEncoder;
-    private Map<String, String> verificationCodes = new ConcurrentHashMap<>();
-    private Map<String, LocalDateTime> verificationCodeExpirations = new ConcurrentHashMap<>();
-    private Map<String, String> passwordResetTokens = new ConcurrentHashMap<>();
-    private Map<String, LocalDateTime> passwordResetTokenExpirations = new ConcurrentHashMap<>();
+    private final Map<String, String> verificationCodes = new ConcurrentHashMap<>();
+    private final Map<String, LocalDateTime> verificationCodeExpirations = new ConcurrentHashMap<>();
+    private final Map<String, String> passwordResetTokens = new ConcurrentHashMap<>();
+    private final Map<String, LocalDateTime> passwordResetTokenExpirations = new ConcurrentHashMap<>();
 
     @Override
     public UserDetails loadUserByUsername(String email) throws EmailNotFound {
@@ -32,7 +33,7 @@ public class AuthImplement implements UserDetailsService {
 
     public Integer addNewUser(RegisterRequest registerRequest) {
         Optional<UserInfo> existingEmail = authRepository.findByEmail(registerRequest.getEmail());
-        if (existingEmail.isEmpty()){
+        if (existingEmail.isEmpty()) {
             return authRepository.saveUser(registerRequest);
         } else {
             throw new EmailTaken("Email Already Taken");
@@ -40,6 +41,9 @@ public class AuthImplement implements UserDetailsService {
     }
 
     public void saveVerificationCode(String email, String code) {
+        verificationCodes.remove(email, code);
+        verificationCodeExpirations.remove(email, code);
+
         verificationCodes.put(email, code);
         verificationCodeExpirations.put(email, LocalDateTime.now().plusMinutes(10));
     }
@@ -50,6 +54,11 @@ public class AuthImplement implements UserDetailsService {
 
     public LocalDateTime getVerificationCodeExpiration(String email) {
         return verificationCodeExpirations.get(email);
+    }
+
+    public boolean isVerificationCodeExpired(String email) {
+        LocalDateTime expirationTime = getVerificationCodeExpiration(email);
+        return expirationTime != null && LocalDateTime.now().isAfter(expirationTime);
     }
 
     public void savePasswordResetToken(String email, String token) {

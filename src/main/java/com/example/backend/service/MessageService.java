@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface MessageService {
     List<Message> getAllMessages();
-    Message insertMessages(MessageRequest messageRequest);
+    Message insertMessages(MessageRequest messageRequest, Integer userId, String name);
     Message getMessageById(Integer messageId);
 }

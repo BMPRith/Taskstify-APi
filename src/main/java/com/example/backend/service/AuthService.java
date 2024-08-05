@@ -65,23 +65,19 @@ public class AuthService {
 
     public boolean verifyCode(String email, String code) {
         String savedCode = authImplement.getVerificationCode(email);
-        LocalDateTime expirationTime = authImplement.getVerificationCodeExpiration(email);
-        if (LocalDateTime.now().isAfter(expirationTime)) {
+        if (authImplement.isVerificationCodeExpired(email)) {
             throw new RuntimeException("Verification code expired");
         }
         return savedCode.equals(code);
     }
 
-
     public boolean verifyResetToken(String token) {
         String email = authImplement.getEmailByToken(token);
-        LocalDateTime expirationTime = authImplement.getPasswordResetTokenExpiration(email);
-
-        if (email == null || expirationTime == null) {
+        if (email == null) {
             throw new RuntimeException("Invalid password reset token");
         }
-
-        if (LocalDateTime.now().isAfter(expirationTime)) {
+        LocalDateTime expirationTime = authImplement.getPasswordResetTokenExpiration(email);
+        if (expirationTime == null || LocalDateTime.now().isAfter(expirationTime)) {
             throw new RuntimeException("Password reset token expired");
         }
         return true;
@@ -92,6 +88,6 @@ public class AuthService {
     }
 
     private String generateVerificationCode() {
-        return String.valueOf((int)((Math.random() * 9000) + 1000));
+        return String.valueOf((int) ((Math.random() * 9000) + 1000));
     }
 }
